@@ -1,11 +1,13 @@
 services:
   - type: web
     name: accessibility-analyzer-backend
-    env: docker
+    env: node
     plan: free
     region: oregon
     branch: main
     rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: PORT
         value: 5000
@@ -13,5 +15,7 @@ services:
         value: production
       - key: MONGODB_URI
         sync: false
-      - key: FRONTEND_URL
+      - key: CLIENT_URL
         sync: false
+      - key: JWT_SECRET
+        generate: true

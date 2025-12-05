@@ -35,9 +35,10 @@ We will deploy the backend first so we can get the API URL.
     - The blueprint sets `mongdb_uri` and `frontend_url` as placeholders.
     - Go to the **Environment** tab of your new service.
     - Add your real `MONGODB_URI` (from MongoDB Atlas).
-    - For `FRONTEND_URL`, you can add it later once the frontend is deployed, or put your Vercel project URL if you know it (e.g., `https://<project-name>.vercel.app`).
+    - For `FRONTEND_URL`, you can add it later once the frontend is deployed.
+    - **`JWT_SECRET`**: You can generate a random string or let Render generate one if configured in blueprint. If manual, just type a long random string.
 
-**Note about Puppeteer**: The `Dockerfile` I included installs Chrome and necessary dependencies so Puppeteer and Lighthouse will work correctly on Render.
+
 
 ## 3. Deploy Frontend (Vercel)
 
@@ -61,4 +62,4 @@ We will deploy the backend first so we can get the API URL.
 ## Troubleshooting
 
 - **CORS Issues**: Ensure `CLIENT_URL` in backend env variables matches your Vercel frontend URL exactly (no trailing slash).
-- **Puppeteer/Lighthouse failures**: Check the Render logs. The Dockerfile is designed to handle this, but ensure your service has enough memory (Standard plan is recommended for Chrome, but Free might work for light testing).
+- **Puppeteer/Lighthouse failures**: If the scanner fails, Render's Node environment might be missing system libraries. Using Docker (as originally planned) fixes this, but you can also look into adding "Puppeteer Buildpacks" if you want to stay on Node.
