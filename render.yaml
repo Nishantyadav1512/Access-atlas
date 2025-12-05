@@ -18,4 +18,4 @@ services:
       - key: CLIENT_URL
         sync: false
       - key: JWT_SECRET
-        generate: true
+        sync: false
