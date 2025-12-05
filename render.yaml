@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: accessibility-analyzer-backend
+    env: docker
+    plan: free
+    region: oregon
+    branch: main
+    rootDir: backend
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: FRONTEND_URL
+        sync: false

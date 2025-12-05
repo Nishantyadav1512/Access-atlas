@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="48" fill="#4A90E2"/>
+  
+  <!-- Accessibility symbol (wheelchair) -->
+  <g transform="translate(50, 50)">
+    <!-- Wheelchair circle -->
+    <circle cx="0" cy="-15" r="12" fill="none" stroke="white" stroke-width="3"/>
+    <!-- Wheelchair seat -->
+    <rect x="-8" y="-8" width="16" height="8" fill="white" rx="2"/>
+    <!-- Wheelchair back -->
+    <rect x="-8" y="-8" width="3" height="12" fill="white" rx="1"/>
+    <!-- Wheelchair wheels -->
+    <circle cx="-12" cy="8" r="8" fill="none" stroke="white" stroke-width="2.5"/>
+    <circle cx="12" cy="8" r="8" fill="none" stroke="white" stroke-width="2.5"/>
+  </g>
+  
+  <!-- Letter A for AccessAtlas -->
+  <text x="50" y="75" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" text-anchor="middle">A</text>
+</svg>
+
