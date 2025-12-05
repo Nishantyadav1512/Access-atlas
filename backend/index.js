@@ -16,44 +16,48 @@ app.use(express.json());
 
 // Connect to database
 connectDB();
+
+console.log('🔧 CORS Configuration:');
+console.log('CLIENT_URL:', process.env.CLIENT_URL);
+
 app.use(cors({
-   origin: process.env.CLIENT_URL || 'http://localhost:5173',
-  credentials:true
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  credentials: true
 }));
 
-app.use((req,res,next)=>{
+app.use((req, res, next) => {
   console.log(`${req.method} ${req.path}`);
   next();
 });
 // Routes
-app.use('/api/auth',authRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/analyze', analyzeRoutes);
 app.use('/api/reports', reportsRoutes);
 // health check 
-app.get('/', (req, res)=>{
+app.get('/', (req, res) => {
   res.json({
-    success:true,
+    success: true,
     message: 'Accessibility Analyzer API',
-    version:'1.0.0',
-    status:'running'
+    version: '1.0.0',
+    status: 'running'
   });
 });
 
-app.use((req,res)=>{
+app.use((req, res) => {
   res.status(404).json({
-    success:false,
-    message:'Route not found'
+    success: false,
+    message: 'Route not found'
   });
 });
 
 // Error handler
 
-app.use((err,req,res,next)=>{
+app.use((err, req, res, next) => {
   console.error('Error:', err);
   res.status(500).json({
-    success:false,
-    message:'Internal server error',
-    error:process.env.NODE_ENV ==='development'? err.message : undefined
+    success: false,
+    message: 'Internal server error',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
 });
 
@@ -61,7 +65,7 @@ app.use((err,req,res,next)=>{
 const PORT = process.env.PORT || 5000;
 // Start server
 app.listen(PORT, () => {
-   console.log('\n' + '='.repeat(50));
+  console.log('\n' + '='.repeat(50));
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📡 Environment: ${process.env.NODE_ENV}`);
   console.log(`🌐 API: http://localhost:${PORT}`);
