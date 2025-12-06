@@ -1,10 +1,11 @@
 services:
   - type: web
     name: access-atlas-backend
-    runtime: docker
+    env: node
     region: oregon
     plan: free
-    dockerfilePath: ./Dockerfile
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
     envVars:
       - key: MONGODB_URI
         sync: false
@@ -12,5 +13,5 @@ services:
         sync: false
       - key: CLIENT_URL
         sync: false
-      - key: RENDER
-        value: "true"
+      - key: NODE_VERSION
+        value: "18"

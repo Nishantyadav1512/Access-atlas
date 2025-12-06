@@ -1,45 +1,33 @@
 import lighthouse from 'lighthouse';
-import * as chromeLauncher from 'chrome-launcher';
-
-// Detect Chrome path for different environments
-const getChromePath = () => {
-  // On Render, Chrome is installed at /usr/bin/chromium or /usr/bin/google-chrome
-  if (process.env.RENDER) {
-    return '/usr/bin/chromium';
-  }
-  // Let chrome-launcher auto-detect on local/other environments
-  return undefined;
-};
+import puppeteer from 'puppeteer';
 
 const runLighthouseAudit = async (url) => {
-  let chrome;
+  let browser;
 
   try {
     console.log(`🚀 Launching Chrome for ${url}`);
 
-    const chromePath = getChromePath();
-    const launchOptions = {
-      chromeFlags: [
-        '--headless',
+    // Use Puppeteer's bundled Chrome (works on Render)
+    browser = await puppeteer.launch({
+      headless: 'new',
+      args: [
         '--no-sandbox',
-        '--disable-gpu',
+        '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
-        '--disable-setuid-sandbox'
+        '--disable-gpu'
       ]
-    };
+    });
 
-    // Add chromePath only if detected (for Render)
-    if (chromePath) {
-      launchOptions.chromePath = chromePath;
-    }
-
-    chrome = await chromeLauncher.launch(launchOptions);
+    // Get the debugging port from Puppeteer's browser
+    const browserWSEndpoint = browser.wsEndpoint();
+    const browserURL = new URL(browserWSEndpoint);
+    const port = parseInt(browserURL.port);
 
     const options = {
       logLevel: 'error',
       output: 'json',
       onlyCategories: ['accessibility', 'performance', 'best-practices', 'seo'],
-      port: chrome.port
+      port: port
     };
 
     console.log('🔍 Running Lighthouse audit...');
@@ -59,8 +47,8 @@ const runLighthouseAudit = async (url) => {
     console.error('❌ Lighthouse error:', error.message);
     throw new Error(`Lighthouse audit failed: ${error.message}`);
   } finally {
-    if (chrome) {
-      await chrome.kill();
+    if (browser) {
+      await browser.close();
     }
   }
 };

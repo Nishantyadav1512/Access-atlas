@@ -7,7 +7,7 @@ const getBaseURL = () => {
     return 'http://localhost:5000/api';
   }
   // In production, use environment variable or deployed backend URL
-  return import.meta.env.VITE_API_URL || 'https://access-atlas-backend.onrender.com/api';
+  return import.meta.env.VITE_API_URL || 'https://accessibility-analyzer-backend-yw2d.onrender.com/api';
 };
 
 // Base Axios instance for talking to the backend API

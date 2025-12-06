@@ -22,6 +22,7 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
   'https://access-atlas.vercel.app',
+  'https://access-atlas-pi.vercel.app',
   process.env.CLIENT_URL,
 ].filter(Boolean); // Remove undefined values
 
