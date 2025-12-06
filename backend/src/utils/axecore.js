@@ -8,6 +8,16 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Detect Chrome executable path for different environments
+const getExecutablePath = () => {
+  // On Render, use system Chromium
+  if (process.env.RENDER) {
+    return '/usr/bin/chromium';
+  }
+  // Let Puppeteer auto-detect on local/other environments
+  return undefined;
+};
+
 const runAxeAudit = async (url) => {
   let browser;
 
@@ -23,10 +33,23 @@ const runAxeAudit = async (url) => {
       console.warn('⚠️ Could not load axe-core source, will use default:', err.message);
     }
 
-    browser = await puppeteer.launch({
+    const executablePath = getExecutablePath();
+    const launchOptions = {
       headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu'
+      ]
+    };
+
+    // Add executablePath only if detected (for Render)
+    if (executablePath) {
+      launchOptions.executablePath = executablePath;
+    }
+
+    browser = await puppeteer.launch(launchOptions);
 
     const page = await browser.newPage();
 
