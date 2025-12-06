@@ -1,4 +1,6 @@
 import puppeteer from 'puppeteer';
+import puppeteerCore from 'puppeteer-core';
+import chromium from '@sparticuz/chromium';
 import { AxePuppeteer } from '@axe-core/puppeteer';
 import fs from 'fs';
 import path from 'path';
@@ -23,16 +25,29 @@ const runAxeAudit = async (url) => {
       console.warn('⚠️ Could not load axe-core source, will use default:', err.message);
     }
 
-    // Use Puppeteer's bundled Chrome (works on Render)
-    browser = await puppeteer.launch({
-      headless: 'new',
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-gpu'
-      ]
-    });
+    // Detect if running on Render or similar serverless environment
+    const isServerless = !!process.env.RENDER || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+
+    if (isServerless) {
+      // Use @sparticuz/chromium for serverless environments
+      browser = await puppeteerCore.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
+      });
+    } else {
+      // Use regular puppeteer for local development
+      browser = await puppeteer.launch({
+        headless: 'new',
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu'
+        ]
+      });
+    }
 
     const page = await browser.newPage();
 

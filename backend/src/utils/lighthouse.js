@@ -1,5 +1,7 @@
 import lighthouse from 'lighthouse';
+import puppeteerCore from 'puppeteer-core';
 import puppeteer from 'puppeteer';
+import chromium from '@sparticuz/chromium';
 
 const runLighthouseAudit = async (url) => {
   let browser;
@@ -7,16 +9,29 @@ const runLighthouseAudit = async (url) => {
   try {
     console.log(`🚀 Launching Chrome for ${url}`);
 
-    // Use Puppeteer's bundled Chrome (works on Render)
-    browser = await puppeteer.launch({
-      headless: 'new',
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-gpu'
-      ]
-    });
+    // Detect if running on Render or similar serverless environment
+    const isServerless = !!process.env.RENDER || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+
+    if (isServerless) {
+      // Use @sparticuz/chromium for serverless environments
+      browser = await puppeteerCore.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
+      });
+    } else {
+      // Use regular puppeteer for local development
+      browser = await puppeteer.launch({
+        headless: 'new',
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu'
+        ]
+      });
+    }
 
     // Get the debugging port from Puppeteer's browser
     const browserWSEndpoint = browser.wsEndpoint();
