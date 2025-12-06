@@ -53,29 +53,15 @@ const runAxeAudit = async (url) => {
 
     console.log('📄 Loading page...');
     await page.goto(url, {
-      waitUntil: 'load',
-      timeout: 60000
+      waitUntil: 'domcontentloaded',
+      timeout: 90000
     });
 
-    // Wait for page to be fully ready
-    await page.evaluate(() => {
-      return new Promise((resolve) => {
-        if (document.readyState === 'complete') {
-          resolve();
-        } else {
-          window.addEventListener('load', resolve, { once: true });
-        }
-      });
-    });
-
-    // Wait for network to be idle (for dynamic content)
+    // Try to wait for network idle, but don't fail if it times out
     try {
-      await page.waitForFunction(
-        () => document.readyState === 'complete',
-        { timeout: 10000 }
-      );
+      await page.waitForNetworkIdle({ timeout: 5000 });
     } catch (e) {
-      // Continue if timeout, page might still be loading
+      console.log('⚠️ Network not idle, continuing anyway...');
     }
 
     // Additional wait for dynamic content to settle (especially for SPAs like ChatGPT)
