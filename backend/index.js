@@ -19,6 +19,7 @@ connectDB();
 
 console.log('🔧 CORS Configuration:');
 console.log('CLIENT_URL:', process.env.CLIENT_URL);
+console.log('🔑 PageSpeed API Key:', process.env.PAGESPEED_API_KEY ? '✅ Configured' : '❌ Missing');
 
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:5173',
