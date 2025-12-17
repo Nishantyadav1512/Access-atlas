@@ -44,6 +44,21 @@ app.get('/', (req, res) => {
   });
 });
 
+// Debug endpoint to check environment variables (remove in production)
+app.get('/api/debug/env', (req, res) => {
+  res.json({
+    success: true,
+    environment: {
+      NODE_ENV: process.env.NODE_ENV,
+      HAS_MONGODB_URI: !!process.env.MONGODB_URI,
+      HAS_CLIENT_URL: !!process.env.CLIENT_URL,
+      HAS_JWT_SECRET: !!process.env.JWT_SECRET,
+      HAS_PAGESPEED_API_KEY: !!process.env.PAGESPEED_API_KEY,
+      PAGESPEED_KEY_LENGTH: process.env.PAGESPEED_API_KEY?.length || 0
+    }
+  });
+});
+
 app.use((req, res) => {
   res.status(404).json({
     success: false,
