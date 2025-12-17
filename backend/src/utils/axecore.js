@@ -3,21 +3,30 @@ import { AxePuppeteer } from '@axe-core/puppeteer';
 
 const runAxeAudit = async (url) => {
   let browser;
-  
+
   try {
     console.log(`🚀 Launching browser for Axe-core on ${url}`);
-    
-    browser = await puppeteer.launch({
+
+    const puppeteerConfig = {
       headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--disable-gpu',
+        '--window-size=1920x1080'
+      ]
+    };
+
+    browser = await puppeteer.launch(puppeteerConfig);
 
     const page = await browser.newPage();
-    
+
     console.log('📄 Loading page...');
-    await page.goto(url, { 
-      waitUntil: 'load', 
-      timeout: 60000 
+    await page.goto(url, {
+      waitUntil: 'load',
+      timeout: 60000
     });
 
     // Wait for page to be fully ready
@@ -70,10 +79,16 @@ const runAxeAudit = async (url) => {
 
   } catch (error) {
     console.error('❌ Axe-core error:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('Error details:', JSON.stringify(error, null, 2));
     throw new Error(`Axe-core audit failed: ${error.message}`);
   } finally {
     if (browser) {
-      await browser.close();
+      try {
+        await browser.close();
+      } catch (closeError) {
+        console.error('Error closing browser:', closeError.message);
+      }
     }
   }
 };

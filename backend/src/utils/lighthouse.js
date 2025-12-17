@@ -3,13 +3,19 @@ import * as chromeLauncher from 'chrome-launcher';
 
 const runLighthouseAudit = async (url) => {
   let chrome;
-  
+
   try {
     console.log(`🚀 Launching Chrome for ${url}`);
-    
-    chrome = await chromeLauncher.launch({
-      chromeFlags: ['--headless', '--no-sandbox', '--disable-gpu']
-    });
+
+    const chromeFlags = [
+      '--headless',
+      '--no-sandbox',
+      '--disable-gpu',
+      '--disable-dev-shm-usage',
+      '--disable-setuid-sandbox'
+    ];
+
+    chrome = await chromeLauncher.launch({ chromeFlags });
 
     const options = {
       logLevel: 'error',
@@ -33,10 +39,16 @@ const runLighthouseAudit = async (url) => {
 
   } catch (error) {
     console.error('❌ Lighthouse error:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('Error details:', JSON.stringify(error, null, 2));
     throw new Error(`Lighthouse audit failed: ${error.message}`);
   } finally {
     if (chrome) {
-      await chrome.kill();
+      try {
+        await chrome.kill();
+      } catch (killError) {
+        console.error('Error killing Chrome:', killError.message);
+      }
     }
   }
 };
