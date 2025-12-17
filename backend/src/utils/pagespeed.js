@@ -18,7 +18,18 @@ const runPageSpeedAudit = async (url) => {
             strategy: 'desktop'
         };
 
-        const response = await axios.get(PAGESPEED_API_URL, { params });
+        // Add API key if available (optional but recommended to avoid rate limits)
+        if (process.env.PAGESPEED_API_KEY) {
+            params.key = process.env.PAGESPEED_API_KEY;
+            console.log('✅ Using PageSpeed API key');
+        } else {
+            console.log('⚠️ No API key - using free tier (limited requests)');
+        }
+
+        const response = await axios.get(PAGESPEED_API_URL, {
+            params,
+            timeout: 60000 // 60 second timeout
+        });
         const { lighthouseResult } = response.data;
 
         // Extract scores
@@ -43,7 +54,13 @@ const runPageSpeedAudit = async (url) => {
     } catch (error) {
         console.error('❌ PageSpeed Insights error:', error.message);
         if (error.response) {
-            console.error('API Response:', error.response.data);
+            console.error('API Response Status:', error.response.status);
+            console.error('API Response Data:', JSON.stringify(error.response.data, null, 2));
+
+            // Handle rate limiting
+            if (error.response.status === 429) {
+                throw new Error('PageSpeed API rate limit exceeded. Please add PAGESPEED_API_KEY to environment variables or try again later. Get a free API key at: https://developers.google.com/speed/docs/insights/v5/get-started');
+            }
         }
         throw new Error(`PageSpeed Insights audit failed: ${error.message}`);
     }

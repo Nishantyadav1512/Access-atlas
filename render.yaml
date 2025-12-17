@@ -6,13 +6,11 @@ services:
     region: oregon
     branch: main
     rootDir: backend
-    buildCommand: npm install --legacy-peer-deps
+    buildCommand: rm -rf node_modules package-lock.json && npm install
     startCommand: npm start
     envVars:
-      - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
-        value: "false"
-      - key: PUPPETEER_CACHE_DIR
-        value: /opt/render/.cache/puppeteer
+      - key: PAGESPEED_API_KEY
+        sync: false
       - key: PORT
         value: 5000
       - key: NODE_ENV
